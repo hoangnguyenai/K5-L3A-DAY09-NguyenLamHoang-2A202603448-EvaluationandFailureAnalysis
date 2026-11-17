@@ -1,0 +1,225 @@
+$ python -m pytest -q
+........................................................................ [ 30%]
+........................................................................ [ 61%]
+................................FFF.......F............................. [ 92%]
+..................                                                       [100%]
+================================== FAILURES ===================================
+____________ test_rejected_tool_returns_safe_failure[issue_refund] ____________
+
+public_db = WindowsPath('C:/Users/Hoang/AppData/Local/Temp/lab8-host-check-dxxa6jvl/cases/test_rejected_tool_returns_saf0/public.sqlite')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001F14A2910F0>
+capsys = <_pytest.capture.CaptureFixture object at 0x000001F14A464750>
+tool = 'issue_refund'
+
+    @pytest.mark.parametrize("tool", ["issue_refund", "write_ledger", "unknown_tool"])
+    def test_rejected_tool_returns_safe_failure(public_db, monkeypatch, capsys, tool):
+        secret = "PRIVATE-CUSTOMER-CONTENT"
+        real_loop = single.run_react
+    
+        def forbidden_action(conn, budget, **kwargs):
+            kwargs["decide"] = lambda observation: {"tool": tool, "args": {"ticket": secret}}
+            return real_loop(conn, budget, **kwargs)
+    
+        monkeypatch.setattr(single, "run_react", forbidden_action)
+        refund = Mock(side_effect=AssertionError("must not refund after rejected tool"))
+        monkeypatch.setattr(single, "issue_refund", refund)
+>       result = single.run_claim("C-001", seed=11, store_path=str(public_db))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+C:\Users\Hoang\K5-L3A-DAY08-MienNui-FromWorkflowsToAgents\src\tests\test_single_agent.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\Hoang\K5-L3A-DAY08-MienNui-FromWorkflowsToAgents\src\lab8\shapes\single.py:44: in run_claim
+    return _run(conn, claim_id, seed=seed, crash_at=crash_at)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\Hoang\K5-L3A-DAY08-MienNui-FromWorkflowsToAgents\src\lab8\shapes\single.py:92: in _run
+    loop = run_react(
+C:\Users\Hoang\K5-L3A-DAY08-MienNui-FromWorkflowsToAgents\src\tests\test_single_agent.py:25: in forbidden_action
+    return real_loop(conn, budget, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\Hoang\K5-L3A-DAY08-MienNui-FromWorkflowsToAgents\src\lab8\runtime.py:75: in run_react
+    result = dispatch(conn, budget, name, args, worker=worker)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+conn = <sqlite3.Connection object at 0x000001F14A362020>
+budget = Budget(model_calls=0, tool_calls=1, input_tokens=0, output_tokens=0, cost_estimate=10.0, steps=1)
+name = 'issue_refund', args = {'ticket': 'PRIVATE-CUSTOMER-CONTENT'}
+
+    def dispatch(
+        conn,
+        budget: Budget,
+        name: str,
+        args: dict[str, Any],
+        *,
+        worker: bool,
+    ) -> dict[str, Any]:
+        if worker and name not in READONLY_TOOLS:
+>           raise ToolRejected(f"worker cannot call {name}")
+E           lab8.runtime.ToolRejected: worker cannot call issue_refund
+
+C:\Users\Hoang\K5-L3A-DAY08-MienNui-FromWorkflowsToAgents\src\lab8\runtime.py:39: ToolRejected
+____________ test_rejected_tool_returns_safe_failure[write_ledger] ____________
+
+public_db = WindowsPath('C:/Users/Hoang/AppData/Local/Temp/lab8-host-check-dxxa6jvl/cases/test_rejected_tool_returns_saf1/public.sqlite')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001F14A31B8C0>
+capsys = <_pytest.capture.CaptureFixture object at 0x000001F14A3FF6D0>
+tool = 'write_ledger'
+
+    @pytest.mark.parametrize("tool", ["issue_refund", "write_ledger", "unknown_tool"])
+    def test_rejected_tool_returns_safe_failure(public_db, monkeypatch, capsys, tool):
+        secret = "PRIVATE-CUSTOMER-CONTENT"
+        real_loop = single.run_react
+    
+        def forbidden_action(conn, budget, **kwargs):
+            kwargs["decide"] = lambda observation: {"tool": tool, "args": {"ticket": secret}}
+            return real_loop(conn, budget, **kwargs)
+    
+        monkeypatch.setattr(single, "run_react", forbidden_action)
+        refund = Mock(side_effect=AssertionError("must not refund after rejected tool"))
+        monkeypatch.setattr(single, "issue_refund", refund)
+>       result = single.run_claim("C-001", seed=11, store_path=str(public_db))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+C:\Users\Hoang\K5-L3A-DAY08-MienNui-FromWorkflowsToAgents\src\tests\test_single_agent.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\Hoang\K5-L3A-DAY08-MienNui-FromWorkflowsToAgents\src\lab8\shapes\single.py:44: in run_claim
+    return _run(conn, claim_id, seed=seed, crash_at=crash_at)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\Hoang\K5-L3A-DAY08-MienNui-FromWorkflowsToAgents\src\lab8\shapes\single.py:92: in _run
+    loop = run_react(
+C:\Users\Hoang\K5-L3A-DAY08-MienNui-FromWorkflowsToAgents\src\tests\test_single_agent.py:25: in forbidden_action
+    return real_loop(conn, budget, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\Hoang\K5-L3A-DAY08-MienNui-FromWorkflowsToAgents\src\lab8\runtime.py:75: in run_react
+    result = dispatch(conn, budget, name, args, worker=worker)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+conn = <sqlite3.Connection object at 0x000001F14A2636A0>
+budget = Budget(model_calls=0, tool_calls=1, input_tokens=0, output_tokens=0, cost_estimate=10.0, steps=1)
+name = 'write_ledger', args = {'ticket': 'PRIVATE-CUSTOMER-CONTENT'}
+
+    def dispatch(
+        conn,
+        budget: Budget,
+        name: str,
+        args: dict[str, Any],
+        *,
+        worker: bool,
+    ) -> dict[str, Any]:
+        if worker and name not in READONLY_TOOLS:
+>           raise ToolRejected(f"worker cannot call {name}")
+E           lab8.runtime.ToolRejected: worker cannot call write_ledger
+
+C:\Users\Hoang\K5-L3A-DAY08-MienNui-FromWorkflowsToAgents\src\lab8\runtime.py:39: ToolRejected
+____________ test_rejected_tool_returns_safe_failure[unknown_tool] ____________
+
+public_db = WindowsPath('C:/Users/Hoang/AppData/Local/Temp/lab8-host-check-dxxa6jvl/cases/test_rejected_tool_returns_saf2/public.sqlite')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001F14A2907C0>
+capsys = <_pytest.capture.CaptureFixture object at 0x000001F14A373550>
+tool = 'unknown_tool'
+
+    @pytest.mark.parametrize("tool", ["issue_refund", "write_ledger", "unknown_tool"])
+    def test_rejected_tool_returns_safe_failure(public_db, monkeypatch, capsys, tool):
+        secret = "PRIVATE-CUSTOMER-CONTENT"
+        real_loop = single.run_react
+    
+        def forbidden_action(conn, budget, **kwargs):
+            kwargs["decide"] = lambda observation: {"tool": tool, "args": {"ticket": secret}}
+            return real_loop(conn, budget, **kwargs)
+    
+        monkeypatch.setattr(single, "run_react", forbidden_action)
+        refund = Mock(side_effect=AssertionError("must not refund after rejected tool"))
+        monkeypatch.setattr(single, "issue_refund", refund)
+>       result = single.run_claim("C-001", seed=11, store_path=str(public_db))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+C:\Users\Hoang\K5-L3A-DAY08-MienNui-FromWorkflowsToAgents\src\tests\test_single_agent.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\Hoang\K5-L3A-DAY08-MienNui-FromWorkflowsToAgents\src\lab8\shapes\single.py:44: in run_claim
+    return _run(conn, claim_id, seed=seed, crash_at=crash_at)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\Hoang\K5-L3A-DAY08-MienNui-FromWorkflowsToAgents\src\lab8\shapes\single.py:92: in _run
+    loop = run_react(
+C:\Users\Hoang\K5-L3A-DAY08-MienNui-FromWorkflowsToAgents\src\tests\test_single_agent.py:25: in forbidden_action
+    return real_loop(conn, budget, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\Hoang\K5-L3A-DAY08-MienNui-FromWorkflowsToAgents\src\lab8\runtime.py:75: in run_react
+    result = dispatch(conn, budget, name, args, worker=worker)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+conn = <sqlite3.Connection object at 0x000001F14A2622F0>
+budget = Budget(model_calls=0, tool_calls=1, input_tokens=0, output_tokens=0, cost_estimate=10.0, steps=1)
+name = 'unknown_tool', args = {'ticket': 'PRIVATE-CUSTOMER-CONTENT'}
+
+    def dispatch(
+        conn,
+        budget: Budget,
+        name: str,
+        args: dict[str, Any],
+        *,
+        worker: bool,
+    ) -> dict[str, Any]:
+        if worker and name not in READONLY_TOOLS:
+>           raise ToolRejected(f"worker cannot call {name}")
+E           lab8.runtime.ToolRejected: worker cannot call unknown_tool
+
+C:\Users\Hoang\K5-L3A-DAY08-MienNui-FromWorkflowsToAgents\src\lab8\runtime.py:39: ToolRejected
+____________________ test_rejected_loop_closes_connection _____________________
+
+public_db = WindowsPath('C:/Users/Hoang/AppData/Local/Temp/lab8-host-check-dxxa6jvl/cases/test_rejected_loop_closes_conn0/public.sqlite')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001F14A25D630>
+
+    def test_rejected_loop_closes_connection(public_db, monkeypatch):
+        connections = []
+        real_connect = single.connect
+    
+        def capture_connection(path):
+            conn = real_connect(path)
+            connections.append(conn)
+            return conn
+    
+        monkeypatch.setattr(single, "connect", capture_connection)
+        monkeypatch.setattr(single, "run_react", Mock(side_effect=ToolRejected("blocked")))
+>       single.run_claim("C-001", seed=11, store_path=str(public_db))
+
+C:\Users\Hoang\K5-L3A-DAY08-MienNui-FromWorkflowsToAgents\src\tests\test_single_agent.py:85: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\Hoang\K5-L3A-DAY08-MienNui-FromWorkflowsToAgents\src\lab8\shapes\single.py:44: in run_claim
+    return _run(conn, claim_id, seed=seed, crash_at=crash_at)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\Hoang\K5-L3A-DAY08-MienNui-FromWorkflowsToAgents\src\lab8\shapes\single.py:92: in _run
+    loop = run_react(
+D:\Python\Lib\unittest\mock.py:1175: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Python\Lib\unittest\mock.py:1179: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Mock id='2135841992256'>
+args = (<sqlite3.Connection object at 0x000001F14A2615D0>, Budget(model_calls=0, tool_calls=1, input_tokens=0, output_tokens=0, cost_estimate=10.0, steps=1))
+kwargs = {'decide': <function _run.<locals>.decide at 0x000001F14A498D50>, 'max_steps': 8, 'observation': {}, 'worker': True}
+effect = ToolRejected('blocked')
+
+    def _execute_mock_call(self, /, *args, **kwargs):
+        # separate from _increment_mock_call so that awaited functions are
+        # executed separately from their call, also AsyncMock overrides this method
+    
+        effect = self.side_effect
+        if effect is not None:
+            if _is_exception(effect):
+>               raise effect
+E               lab8.runtime.ToolRejected: blocked
+
+D:\Python\Lib\unittest\mock.py:1234: ToolRejected
+=========================== short test summary info ===========================
+FAILED tests/test_single_agent.py::test_rejected_tool_returns_safe_failure[issue_refund]
+FAILED tests/test_single_agent.py::test_rejected_tool_returns_safe_failure[write_ledger]
+FAILED tests/test_single_agent.py::test_rejected_tool_returns_safe_failure[unknown_tool]
+FAILED tests/test_single_agent.py::test_rejected_loop_closes_connection - lab...
+4 failed, 230 passed, 282 deselected in 31.26s
+
+exit=1
